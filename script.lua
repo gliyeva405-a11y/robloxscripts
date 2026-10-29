@@ -45,7 +45,6 @@ local function startFlying()
     task.spawn(function()
         while Flying and Character:FindFirstChild("HumanoidRootPart") do
             task.wait()
-            -- Kameranın baktığı yöne doğru hareket etme (Mobil joystick desteği için optimize)
             local moveDirection = Humanoid.MoveDirection
             if moveDirection.Magnitude > 0 then
                 BodyVelocity.Velocity = moveDirection * FlySpeed
@@ -87,7 +86,6 @@ local function getClosestPlayer()
     
     for _, v in pairs(game.Players:GetPlayers()) do
         if v ~= Player and v.Character and v.Character:FindFirstChild("HumanoidRootPart") and v.Character:FindFirstChild("Humanoid") and v.Character.Humanoid.Health > 0 then
-            -- Karakterinizin hedef oyuncuya olan mesafesi
             local distance = (Player.Character.HumanoidRootPart.Position - v.Character.HumanoidRootPart.Position).Magnitude
             if distance < shortestDistance then
                 closestPlayer = v
@@ -104,7 +102,6 @@ task.spawn(function()
         if AimbotEnabled then
             local target = getClosestPlayer()
             if target and target.Character and target.Character:FindFirstChild("Head") then
-                -- Anti-hileyi tetiklemeyecek yumuşaklıkta kamerayı kafaya odaklar
                 Camera.CFrame = CFrame.new(Camera.CFrame.Position, target.Character.Head.Position)
             end
         end
@@ -120,7 +117,6 @@ CombatTab:CreateToggle({
 })
 
 -- --- 3. ÖZELLİK: SILENT AIM (MERMİLERİ YÖNLENDİRME) ---
--- Savaş Tycoon'un silah ateşleme motorunun (Raycast/Mouse) arkasına sızar (Hooking)
 local mt = getrawmetatable(game)
 local oldNamecall = mt.__namecall
 setreadonly(mt, false)
@@ -132,7 +128,6 @@ mt.__namecall = newcclosure(function(self, ...)
     if SilentAimEnabled and (method == "FindPartOnRay" or method == "FindPartOnRayWithIgnoreList" or method == "Raycast") then
         local target = getClosestPlayer()
         if target and target.Character and target.Character:FindFirstChild("Head") then
-            -- Savaş Tycoon anti-hilesinin mermi yönü kontrolünü bypass etmek için simüle edilen pozisyonu değiştirir
             return target.Character.Head, target.Character.Head.Position, target.Character.Head.CFrame.LookVector, target.Character.Head.Material
         end
     end
